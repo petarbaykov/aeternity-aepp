@@ -243,7 +243,7 @@
       },
       async getReverseWindow() {
         const iframe = document.createElement('iframe')
-        iframe.src = 'http://localhost:9000'
+        iframe.src = 'https://base.aepps.com'
         iframe.style.display = 'none'
         document.body.appendChild(iframe)
         return iframe.contentWindow
@@ -274,7 +274,7 @@
       window !== window.parent || await this.getReverseWindow()
       //
 
-
+      let context = this
       this.client = await RpcAepp({
         name: 'AEPP',
         url: NODE_URL,
@@ -284,8 +284,10 @@
           if (this.getNetworkId() !== params.network) alert(`Connected network ${this.getNetworkId()} is not supported with wallet network ${params.netwok}`)
         },
         async onAddressChange (addresses) {
-          this.pub = await this.address()
-          this.balance = await this.client.balance(this.pub).catch(console.log)
+          console.log("change")
+          console.log(await this.address())
+          context.pub = await this.address()
+          context.balance = await context.client.balance(context.pub).catch(console.log)
         },
         onDisconnect (a) {
           console.log(a)
