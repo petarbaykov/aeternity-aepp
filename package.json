@@ -14,7 +14,7 @@
   "author": "Enrico Icardi <enrico.icardi@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "@aeternity/aepp-sdk": "github:petbaik/aepp-sdk-js#aex-2",
+    "@aeternity/aepp-sdk": "github:petbaik/aepp-sdk-js#feature/aex-2",
     "express": "^4.17.1",
     "purgecss-webpack-plugin": "^1.2.0",
     "vue": "^2.5.16",
