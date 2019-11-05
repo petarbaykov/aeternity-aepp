@@ -300,7 +300,7 @@
       const scannerConnection = await BrowserWindowMessageConnection({
         connectionInfo: { id: 'spy' }
       })
-      console.log(scannerConnection)
+      console.log(this.client)
       this.detector = await Detector({ connection: scannerConnection })
       console.log(this.detector)
       await this.scanForWallets()
