@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "SET NODE_ENV='prod' && webpack -p",
+    "start" : "node server",
     "start:dev": "SET NODE_ENV='dev' && webpack-dev-server --config ./webpack.config.js"
   },
   "main": "src/index.js",
@@ -14,6 +15,7 @@
   "license": "ISC",
   "dependencies": {
     "@aeternity/aepp-sdk": "github:aeternity/aepp-sdk-js#b8a6389220e7b09650bd93f97da8cd7f6ed3a2a6",
+    "express": "^4.17.1",
     "purgecss-webpack-plugin": "^1.2.0",
     "vue": "^2.5.16",
     "vue-router": "^3.0.1",

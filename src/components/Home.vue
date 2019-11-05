@@ -281,6 +281,8 @@
         internalUrl: NODE_INTERNAL_URL,
         compilerUrl: COMPILER_URL,
         onNetworkChange (params) {
+          console.log(params)
+          console.log(this.getNetworkId())
           if (this.getNetworkId() !== params.network) alert(`Connected network ${this.getNetworkId()} is not supported with wallet network ${params.netwok}`)
         },
         async onAddressChange (addresses) {
