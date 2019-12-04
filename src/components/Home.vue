@@ -199,7 +199,7 @@
   import { RpcAepp } from '@aeternity/aepp-sdk/es'
   import Detector from '@aeternity/aepp-sdk/es/utils/aepp-wallet-communication/wallet-detector'
   import BrowserWindowMessageConnection from '@aeternity/aepp-sdk/es/utils/aepp-wallet-communication/wallet-connection/browser-window-message'
-  import { isValidKeypair } from '../../../../../../../es/utils/crypto'
+  import { isValidKeypair } from '@aeternity/aepp-sdk/es/utils/crypto'
 
   // Send wallet connection info to Aepp throug content script
   const NODE_URL = 'https://sdk-testnet.aepps.com'
@@ -292,12 +292,14 @@
       },
       async getReverseWindow() {
         const iframe = document.createElement('iframe')
-        iframe.src = prompt('Enter wallet URL', 'http://localhost:9000')
+        // iframe.src = prompt('Enter wallet URL', 'http://localhost:9000')
+        iframe.src = ''
         iframe.style.display = 'none'
         document.body.appendChild(iframe)
         return iframe.contentWindow
       },
       async connectToWallet (wallet) {
+        console.log(wallet)
         await this.client.connectToWallet(await wallet.getConnection())
         this.accounts = await this.client.subscribeAddress('subscribe', 'connected')
         this.pub = await this.client.address()
@@ -336,7 +338,8 @@
         internalUrl: NODE_INTERNAL_URL,
         compilerUrl: COMPILER_URL,
         onNetworkChange (params) {
-          if (this.getNetworkId() !== params.networkId) alert(`Connected network ${this.getNetworkId()} is not supported with wallet network ${params.networkId}`)
+          console.log(params)
+          // if (this.getNetworkId() !== params.networkId) alert(`Connected network ${this.getNetworkId()} is not supported with wallet network ${params.networkId}`)
         },
         onAddressChange:  async (addresses) => {
           this.pub = await this.client.address()
@@ -344,7 +347,8 @@
           this.addressResponse = await errorAsField(this.client.address())
         },
         onDisconnect (a) {
-          debugger
+          // debugger
+          console.log(a)
         }
       })
       this.height = await this.client.height()
