@@ -4,11 +4,6 @@
       <div class="flex items-center flex-shrink-0  mr-6">
         <span class="font-semibold text-xl tracking-tight">Sample Aeternity Aepp</span>
       </div>
-      <div class="block lg:hidden">
-        <button class="flex items-center px-3 py-2 border rounded text-teal-200 border-teal-400 hover:text-white hover:border-white">
-          <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
-        </button>
-      </div>
       <div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
         <div class="text-sm lg:flex-grow">
         </div>
@@ -20,72 +15,59 @@
         </div>
       </div>
     </nav>
-    <div class="w-full p-4 flex flex-col">
-      <div class="border mt-4 rounded overflow-hidden shadow-lg p-4 text-center">
-        <h2 class="mt-4 mb-4 big-title">Wallet info</h2>
-        <div class="bg-green w-full flex flex-row font-mono border border-b">
-          <div class="p-2 w-1/4">
-            Public Key <small>(from Wallet Aepp)</small>
-          </div>
-          <div v-if="addressResponse" class="p-2 w-3/4 bg-grey-lightest break-words">
-            {{addressResponse | responseToString}}
-          </div>
-          <div v-else class="p-2 w-3/4 bg-grey-lightest break-words text-grey">
-            Requesting Public Key from AE Wallet...
-          </div>
-        </div>
-        <div v-if="balance" class="bg-green w-full flex flex-row font-mono border border-b">
-          <div class="p-2 w-1/4">
-            Balance
-          </div>
-          <div class="p-2 w-3/4 bg-grey-lightest">
-            {{balance}}
-          </div>
-        </div>
-        <div v-if="heightResponse" class="bg-green w-full flex flex-row font-mono border border-b">
-          <div class="p-2 w-1/4">
-            Height
-          </div>
-          <div class="p-2 w-3/4 bg-grey-lightest">
-            {{heightResponse | responseToString}}
-          </div>
-        </div>
+    <div class="px-2">
+      <div class="flex flex-wrap p-4 -mx-2 ">
+        <div class="w-full sm:w-5/5 md:w-2/5 lg:w-2/5 xl:w-2/5 mb-4 px-2 border rounded shadow-lg p-2 text-center">
+          <h2 class="mt-4 mb-4 big-title">Wallet info</h2>
 
-        <template v-if="nodeInfoResponse">
-          <div v-if="nodeInfoResponse.error" class="bg-green w-full flex flex-row font-mono border border-b">
-            <div class="p-2 w-1/4">
-              NodeInfo error
-            </div>
-            <div class="p-2 w-3/4 bg-grey-lightest break-words">
-              {{nodeInfoResponse.error}}
-            </div>
-          </div>
-          <div
-            v-for="(value, name) in nodeInfoResponse.result"
-            v-if="['url', 'name', 'nodeNetworkId', 'version'].includes(name)"
-            class="bg-green w-full flex flex-row font-mono border border-b"
-          >
-            <div class="p-2 w-1/4 capitalize">
-              {{name.replace('nodeNetworkId', 'NetworkId')}}
-            </div>
-            <div class="p-2 w-3/4 bg-grey-lightest">
-              {{value}}
-            </div>
-          </div>
-        </template>
-
-        <div v-if="compilerVersionResponse" class="bg-green w-full flex flex-row font-mono border border-b">
-          <div class="p-2 w-1/4">
-            Compiler version
-          </div>
-          <div class="p-2 w-3/4 bg-grey-lightest">
-            {{compilerVersionResponse | responseToString}}
-          </div>
+          <ae-list>
+            <ae-list-item fill="neutral" v-if="balance">
+              <div class="flex  items-center justify-between w-full" >
+                <div class="mr-3 text-grey-dark font-bold">Balance</div>
+                <div>{{ getBalance }} AE</div>
+              </div>
+            </ae-list-item>
+            <ae-list-item fill="neutral" v-if="heightResponse">
+              <div class="flex  items-center justify-between w-full" >
+                <div class="mr-3 text-grey-dark font-bold">Height</div>
+                <div>{{heightResponse | responseToString}} </div>
+              </div>
+            </ae-list-item>
+            <template v-if="nodeInfoResponse">
+              <div v-if="nodeInfoResponse.error" class="bg-green w-full flex flex-row font-mono border border-b">
+                <div class="p-2 w-1/4">
+                  NodeInfo error
+                </div>
+                <div class="p-2 w-3/4 bg-grey-lightest break-words">
+                  {{nodeInfoResponse.error}}
+                </div>
+              </div>
+              <ae-list-item fill="neutral" 
+                v-for="(value, name) in nodeInfoResponse.result"
+                v-if="['url', 'name', 'nodeNetworkId', 'version'].includes(name)"
+              >
+                <div class="flex  items-center justify-between w-full" >
+                  <div class="capitalize mr-3 text-grey-dark font-bold">{{name.replace('nodeNetworkId', 'NetworkId')}}</div>
+                  <div> {{value}} </div>
+                </div>
+              </ae-list-item>
+            </template>
+            <ae-list-item fill="neutral" v-if="compilerVersionResponse">
+              <div class="flex  items-center justify-between w-full" >
+                <div class="mr-3 text-grey-dark font-bold">Compiler version</div>
+                <div>{{compilerVersionResponse | responseToString}} </div>
+              </div>
+            </ae-list-item>
+          </ae-list>
+          <ae-button v-if="addressResponse" face="round" fill="primary" class="mt-4" @click="disconnect">Disconnect</ae-button>
         </div>
-
-
-        <ae-button v-if="addressResponse" face="round" fill="primary" class="mt-4" @click="disconnect">Disconnect</ae-button>
+        <div class="w-full sm:w-5/5 md:w-3/5 lg:w-3/5 xl:w-3/5 mb-4 px-2 ">
+          Col 2
+        </div>
       </div>
+    </div>
+    <div class="w-full p-4 flex flex-col">
+      
 
       
 
