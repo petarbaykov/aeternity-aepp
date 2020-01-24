@@ -13,6 +13,7 @@
   "author": "Enrico Icardi <enrico.icardi@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "@aeternity/aepp-components": "git+https://github.com/aeternity/aepp-components.git#develop",
     "@aeternity/aepp-sdk": "7.0.0-next.2",
     "express": "^4.17.1",
     "purgecss-webpack-plugin": "^1.2.0",

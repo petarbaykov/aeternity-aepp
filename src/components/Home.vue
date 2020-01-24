@@ -1,194 +1,216 @@
 <template>
-  <div class="w-full p-4 flex flex-col">
-    <h1 class="mb-4">Your Aepp</h1>
-
-    <div class="border">
-      <div class="bg-green w-full flex flex-row font-mono border border-b">
-        <div class="p-2 w-1/4">
-          Public Key <small>(from Wallet Aepp)</small>
+  <div>
+    <nav class="flex items-center justify-between flex-wrap bg-white p-6 shadow-lg">
+      <div class="flex items-center flex-shrink-0  mr-6">
+        <span class="font-semibold text-xl tracking-tight">Sample Aeternity Aepp</span>
+      </div>
+      <div class="block lg:hidden">
+        <button class="flex items-center px-3 py-2 border rounded text-teal-200 border-teal-400 hover:text-white hover:border-white">
+          <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+        </button>
+      </div>
+      <div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
+        <div class="text-sm lg:flex-grow">
         </div>
-        <div v-if="addressResponse" class="p-2 w-3/4 bg-grey-lightest break-words">
-          {{addressResponse | responseToString}}
-        </div>
-        <div v-else class="p-2 w-3/4 bg-grey-lightest break-words text-grey">
-          Requesting Public Key from AE Wallet...
+        <div v-if="addressResponse">
+          <div class="flex  items-center justify-between" >
+            <div class="mr-3 text-grey-dark font-bold">{{ getBalance }} AE</div>
+            <ae-identicon v-if="addressResponse" :address="addressResponse.result" size="base" />
+          </div>
         </div>
       </div>
-      <div v-if="balance" class="bg-green w-full flex flex-row font-mono border border-b">
-        <div class="p-2 w-1/4">
-          Balance
-        </div>
-        <div class="p-2 w-3/4 bg-grey-lightest">
-          {{balance}}
-        </div>
-      </div>
-      <div v-if="heightResponse" class="bg-green w-full flex flex-row font-mono border border-b">
-        <div class="p-2 w-1/4">
-          Height
-        </div>
-        <div class="p-2 w-3/4 bg-grey-lightest">
-          {{heightResponse | responseToString}}
-        </div>
-      </div>
-
-      <template v-if="nodeInfoResponse">
-        <div v-if="nodeInfoResponse.error" class="bg-green w-full flex flex-row font-mono border border-b">
+    </nav>
+    <div class="w-full p-4 flex flex-col">
+      <div class="border mt-4 rounded overflow-hidden shadow-lg p-4 text-center">
+        <h2 class="mt-4 mb-4 big-title">Wallet info</h2>
+        <div class="bg-green w-full flex flex-row font-mono border border-b">
           <div class="p-2 w-1/4">
-            NodeInfo error
+            Public Key <small>(from Wallet Aepp)</small>
           </div>
-          <div class="p-2 w-3/4 bg-grey-lightest break-words">
-            {{nodeInfoResponse.error}}
+          <div v-if="addressResponse" class="p-2 w-3/4 bg-grey-lightest break-words">
+            {{addressResponse | responseToString}}
+          </div>
+          <div v-else class="p-2 w-3/4 bg-grey-lightest break-words text-grey">
+            Requesting Public Key from AE Wallet...
           </div>
         </div>
-        <div
-          v-for="(value, name) in nodeInfoResponse.result"
-          v-if="['url', 'name', 'nodeNetworkId', 'version'].includes(name)"
-          class="bg-green w-full flex flex-row font-mono border border-b"
-        >
-          <div class="p-2 w-1/4 capitalize">
-            {{name.replace('nodeNetworkId', 'NetworkId')}}
+        <div v-if="balance" class="bg-green w-full flex flex-row font-mono border border-b">
+          <div class="p-2 w-1/4">
+            Balance
           </div>
           <div class="p-2 w-3/4 bg-grey-lightest">
-            {{value}}
+            {{balance}}
           </div>
         </div>
-      </template>
-
-      <div v-if="compilerVersionResponse" class="bg-green w-full flex flex-row font-mono border border-b">
-        <div class="p-2 w-1/4">
-          Compiler version
+        <div v-if="heightResponse" class="bg-green w-full flex flex-row font-mono border border-b">
+          <div class="p-2 w-1/4">
+            Height
+          </div>
+          <div class="p-2 w-3/4 bg-grey-lightest">
+            {{heightResponse | responseToString}}
+          </div>
         </div>
-        <div class="p-2 w-3/4 bg-grey-lightest">
-          {{compilerVersionResponse | responseToString}}
+
+        <template v-if="nodeInfoResponse">
+          <div v-if="nodeInfoResponse.error" class="bg-green w-full flex flex-row font-mono border border-b">
+            <div class="p-2 w-1/4">
+              NodeInfo error
+            </div>
+            <div class="p-2 w-3/4 bg-grey-lightest break-words">
+              {{nodeInfoResponse.error}}
+            </div>
+          </div>
+          <div
+            v-for="(value, name) in nodeInfoResponse.result"
+            v-if="['url', 'name', 'nodeNetworkId', 'version'].includes(name)"
+            class="bg-green w-full flex flex-row font-mono border border-b"
+          >
+            <div class="p-2 w-1/4 capitalize">
+              {{name.replace('nodeNetworkId', 'NetworkId')}}
+            </div>
+            <div class="p-2 w-3/4 bg-grey-lightest">
+              {{value}}
+            </div>
+          </div>
+        </template>
+
+        <div v-if="compilerVersionResponse" class="bg-green w-full flex flex-row font-mono border border-b">
+          <div class="p-2 w-1/4">
+            Compiler version
+          </div>
+          <div class="p-2 w-3/4 bg-grey-lightest">
+            {{compilerVersionResponse | responseToString}}
+          </div>
+        </div>
+
+
+        <ae-button v-if="addressResponse" face="round" fill="primary" class="mt-4" @click="disconnect">Disconnect</ae-button>
+      </div>
+
+      
+
+      <div class="border mt-4 rounded overflow-hidden shadow-lg p-4 text-center">
+        <h2 class="mt-4 mb-4 p-2 big-title">Spend tokens</h2>
+
+        <!-- <div v-if="spendResponse" class="border mt-4 mb-8 rounded">
+          <div class="bg-green w-full flex flex-row font-mono border border-b">
+            <div class="p-2 w-1/4">
+              Send result
+            </div>
+            <div
+              class="p-2 w-3/4 bg-grey-lightest break-words whitespace-pre-wrap"
+            >{{ spendResponse | responseToFormattedJSON }}</div>
+          </div>
+        </div> -->
+
+        <div  v-if="spendResponse" class="bg-teal-lightest border-t-4 border-teal rounded-b text-teal-datker px-4 py-3 shadow-md mt-4 mb-4" role="alert">
+          <div class="flex">
+            <div class="py-1"><svg class="fill-current h-6 w-6 text-teal mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/></svg></div>
+            <div>
+              <p class="font-bold">Send result</p>
+              <p class=" break-words whitespace-pre-wrap">{{ spendResponse | responseToFormattedJSON }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="bg-grey-lightest w-full flex flex-row font-mono">
+          <div class="p-2 w-1/4">
+            Recipient address
+          </div>
+          <div class="p-2 w-3/4 bg-white break-words">
+            <input
+              class="bg-black text-white border-b border-black p-2 w-full"
+              v-model="spendTo"
+              placeholder="ak_..."
+            />
+          </div>
+        </div>
+        <div class="bg-grey-lightest w-full flex flex-row font-mono">
+          <div class="p-2 w-1/4">
+            Tokens amount
+          </div>
+          <div class="p-2 w-3/4 bg-white break-words">
+            <input
+              class="bg-black text-white border-b border-black p-2 w-full"
+              v-model="spendAmount"
+            />
+          </div>
+        </div>
+        <div class="bg-grey-lightest w-full flex flex-row font-mono">
+          <div class="p-2 w-1/4">
+            Payload
+          </div>
+          <div class="p-2 w-3/4 bg-white break-words">
+            <input
+              class="bg-black text-white border-b border-black p-2 w-full"
+              v-model="spendPayload"
+            />
+          </div>
+        </div>
+
+        <ae-button v-if="client" face="round" fill="primary" class="mt-4" @click="spend">Spend</ae-button>
+      </div>
+
+      
+
+      
+
+      <div class="border mt-4 rounded overflow-hidden shadow-lg p-4 text-center">
+        <h2 class="mt-4 mb-4 p-2 big-title">Compile Contract</h2>
+        <div class="bg-grey-lightest w-full flex flex-row font-mono">
+          <div class="p-2 w-1/4">
+            Contract Code
+          </div>
+          <div class="p-2 w-3/4 bg-white">
+            <textarea class="bg-black text-white border-b border-black p-2 w-full h-64" v-model="contractCode" placeholder="contact code"/>
+          </div>
+        </div>
+
+        <ae-button v-if="client" face="round" fill="primary" class="mt-4" @click="compile">Compile</ae-button>
+      </div>
+
+      <div v-if="compileBytecodeResponse" class="border mt-4 mb-8 rounded overflow-hidden shadow-lg p-4 text-center">
+        <div class="bg-green w-full flex flex-row font-mono border border-b">
+          <div class="p-2 w-1/4">
+            Compiled Code
+          </div>
+          <div class="p-2 w-3/4 bg-grey-lightest break-words">
+            {{ compileBytecodeResponse | responseToString }}
+          </div>
+        </div>
+
+        <ae-button v-if="compileBytecodeResponse && compileBytecodeResponse.result" face="round" fill="primary" class="mt-4" @click="deploy">Deploy</ae-button>
+      </div>
+
+      
+
+      <div v-if="deployResponse" class="border mt-4 mb-8 rounded">
+        <div class="bg-green w-full flex flex-row font-mono border border-b">
+          <div class="p-2 w-1/4">
+            Deployed Contract
+          </div>
+          <div
+            class="p-2 w-3/4 bg-grey-lightest break-words whitespace-pre-wrap"
+          >{{ deployResponse | responseToFormattedJSON }}</div>
         </div>
       </div>
 
       <button
-        v-if="addressResponse"
+        v-if="deployResponse && deployResponse.result"
         class="w-32 rounded rounded-full bg-purple text-white py-2 px-4 pin-r mr-8 mt-4 text-xs"
-        @click="disconnect"
-      >Disconnect</button>
-    </div>
-
-    <h2 class="mt-4">Spend tokens</h2>
-
-    <div class="border mt-4 rounded">
-      <div class="bg-grey-lightest w-full flex flex-row font-mono">
-        <div class="p-2 w-1/4">
-          Recipient address
-        </div>
-        <div class="p-2 w-3/4 bg-white break-words">
-          <input
-            class="bg-black text-white border-b border-black p-2 w-full"
-            v-model="spendTo"
-            placeholder="ak_..."
-          />
-        </div>
-      </div>
-      <div class="bg-grey-lightest w-full flex flex-row font-mono">
-        <div class="p-2 w-1/4">
-          Tokens amount
-        </div>
-        <div class="p-2 w-3/4 bg-white break-words">
-          <input
-            class="bg-black text-white border-b border-black p-2 w-full"
-            v-model="spendAmount"
-          />
-        </div>
-      </div>
-      <div class="bg-grey-lightest w-full flex flex-row font-mono">
-        <div class="p-2 w-1/4">
-          Payload
-        </div>
-        <div class="p-2 w-3/4 bg-white break-words">
-          <input
-            class="bg-black text-white border-b border-black p-2 w-full"
-            v-model="spendPayload"
-          />
-        </div>
-      </div>
-      <button
-        v-if="client"
-        class="w-32 rounded rounded-full bg-purple text-white py-2 px-4 pin-r mr-8 mt-4 text-xs"
-        @click="spend"
+        @click="call"
       >
-        Spend
+        Call
       </button>
-    </div>
 
-    <div v-if="spendResponse" class="border mt-4 mb-8 rounded">
-      <div class="bg-green w-full flex flex-row font-mono border border-b">
-        <div class="p-2 w-1/4">
-          Send result
+      <div v-if="callResponse" class="border mt-4 mb-8 rounded">
+        <div class="bg-green w-full flex flex-row font-mono border border-b">
+          <div class="p-2 w-1/4">
+            Call Result
+          </div>
+          <div
+            class="p-2 w-3/4 bg-grey-lightest break-words whitespace-pre-wrap"
+          >{{ callResponse | responseToFormattedJSON }}</div>
         </div>
-        <div
-          class="p-2 w-3/4 bg-grey-lightest break-words whitespace-pre-wrap"
-        >{{ spendResponse | responseToFormattedJSON }}</div>
-      </div>
-    </div>
-
-    <h2 class="mt-4">Compile Contract</h2>
-
-    <div class="border mt-4 rounded">
-      <div class="bg-grey-lightest w-full flex flex-row font-mono">
-        <div class="p-2 w-1/4">
-          Contract Code
-        </div>
-        <div class="p-2 w-3/4 bg-white">
-          <textarea class="bg-black text-white border-b border-black p-2 w-full h-64" v-model="contractCode" placeholder="contact code"/>
-        </div>
-      </div>
-      <button v-if="client" class="w-32 rounded rounded-full bg-purple text-white py-2 px-4 pin-r mr-8 mt-4 text-xs" @click="compile">
-        Compile
-      </button>
-    </div>
-
-    <div v-if="compileBytecodeResponse" class="border mt-4 mb-8 rounded">
-      <div class="bg-green w-full flex flex-row font-mono border border-b">
-        <div class="p-2 w-1/4">
-          Compiled Code
-        </div>
-        <div class="p-2 w-3/4 bg-grey-lightest break-words">
-          {{ compileBytecodeResponse | responseToString }}
-        </div>
-      </div>
-    </div>
-
-    <button
-      v-if="compileBytecodeResponse && compileBytecodeResponse.result"
-      class="w-32 rounded rounded-full bg-purple text-white py-2 px-4 pin-r mr-8 mt-4 text-xs"
-      @click="deploy"
-    >
-      Deploy
-    </button>
-
-    <div v-if="deployResponse" class="border mt-4 mb-8 rounded">
-      <div class="bg-green w-full flex flex-row font-mono border border-b">
-        <div class="p-2 w-1/4">
-          Deployed Contract
-        </div>
-        <div
-          class="p-2 w-3/4 bg-grey-lightest break-words whitespace-pre-wrap"
-        >{{ deployResponse | responseToFormattedJSON }}</div>
-      </div>
-    </div>
-
-    <button
-      v-if="deployResponse && deployResponse.result"
-      class="w-32 rounded rounded-full bg-purple text-white py-2 px-4 pin-r mr-8 mt-4 text-xs"
-      @click="call"
-    >
-      Call
-    </button>
-
-    <div v-if="callResponse" class="border mt-4 mb-8 rounded">
-      <div class="bg-green w-full flex flex-row font-mono border border-b">
-        <div class="p-2 w-1/4">
-          Call Result
-        </div>
-        <div
-          class="p-2 w-3/4 bg-grey-lightest break-words whitespace-pre-wrap"
-        >{{ callResponse | responseToFormattedJSON }}</div>
       </div>
     </div>
   </div>
@@ -250,7 +272,15 @@
         ? `Error: ${response.error}`
         : JSON.stringify(response.result, null, 4),
     },
+    computed: { 
+      getBalance() {
+        return this.convertToAE(this.balance)
+      }
+    },
     methods: {
+      convertToAE  (balance)  {
+          return +(balance / 10 ** 18).toFixed(7);
+      },
       async spend () {
         const onAccount = Object.keys(this.accounts.address.connected)[0]
         this.spendResponse = await errorAsField(this.client.spend(
@@ -314,11 +344,12 @@
       async scanForWallets () {
         const handleWallets = async function ({ wallets, newWallet }) {
           newWallet = newWallet || Object.values(wallets)[0]
-          if (confirm(`Do you want to connect to wallet ${newWallet.name}`)) {
-            this.detector.stopScan()
+          // if (confirm(`Do you want to connect to wallet ${newWallet.name}`)) {
+            
+          // }
+          this.detector.stopScan()
 
-            await this.connectToWallet(newWallet)
-          }
+          await this.connectToWallet(newWallet)
         }
 
         const scannerConnection = await BrowserWindowMessageConnection({
@@ -363,3 +394,21 @@
     }
   }
 </script>
+
+
+<style scoped>
+.big-title {
+  font-size: 2.4375rem;
+  font-weight: 700;
+  line-height: 4.0625rem;
+  color: #203040;
+  margin: 1.5rem 0;
+}
+.ae-identicon {
+    box-shadow: 0 0 0 2px #ff0d6a;
+    border: .125rem solid transparent;
+    width: 2.625rem !important;
+    height: 2.625rem !important;
+}
+
+</style>
