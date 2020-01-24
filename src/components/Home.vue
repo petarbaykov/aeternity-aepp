@@ -69,14 +69,9 @@
         <div class="w-full sm:w-5/5 md:w-3/5 lg:w-3/5 xl:w-3/5 mb-4 px-2 ">
           <div class=" border rounded shadow-lg p-2 text-center">
             <h2 class="mt-4 mb-4 p-2 big-title">Spend tokens</h2>
-            <div  v-if="spendResponse" class="bg-teal-lightest border-t-4 border-teal rounded-b text-teal-datker px-4 py-3 shadow-md mt-4 mb-4" role="alert">
-              <div class="flex">
-                <div class="py-1"><svg class="fill-current h-6 w-6 text-teal mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/></svg></div>
-                <div>
-                  <p class="font-bold">Send result</p>
-                  <p class=" break-words whitespace-pre-wrap">{{ spendResponse | responseToFormattedJSON }}</p>
-                </div>
-              </div>
+            <div  v-if="spendResponse" class="bg-red-lightest border border-red-light text-red-darkest px-4 py-3 rounded relative text-left mb-4 mt-4" role="alert">
+              <strong class="font-bold">Send result!</strong>
+              <span class="block sm:inline break-words whitespace-pre-wrap">{{ spendResponse | responseToFormattedJSON }}</span>
             </div>
             <div class="bg-grey-lightest w-full flex flex-row font-mono">
               <div class="p-2 w-1/4">
@@ -380,5 +375,9 @@
 }
 .ae-address li {
   list-style: none;
+}
+.ae-button.round {
+  height: 45px;
+  padding: 0 3rem;
 }
 </style>
