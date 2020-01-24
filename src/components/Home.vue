@@ -199,11 +199,11 @@
   import { RpcAepp } from '@aeternity/aepp-sdk/es'
   import Detector from '@aeternity/aepp-sdk/es/utils/aepp-wallet-communication/wallet-detector'
   import BrowserWindowMessageConnection from '@aeternity/aepp-sdk/es/utils/aepp-wallet-communication/connection/browser-window-message'
-import Node from '@aeternity/aepp-sdk/es/node'
+  import Node from '@aeternity/aepp-sdk/es/node'
 
   // Send wallet connection info to Aepp throug content script
-  const NODE_URL = 'https://mainnet.aeternity.io'
-  const NODE_INTERNAL_URL = 'https://mainnet.aeternity.io'
+  const NODE_URL = 'https://testnet.aeternal.io'
+  const NODE_INTERNAL_URL = 'https://testnet.aeternal.io'
   const COMPILER_URL = 'https://latest.compiler.aepps.com'
 
   const errorAsField = async fn => {
@@ -332,7 +332,13 @@ import Node from '@aeternity/aepp-sdk/es/node'
       // Open iframe with Wallet if run in top window
       window !== window.parent || await this.getReverseWindow()
       //
-      const node = await Node({ url: NODE_URL, internalUrl:  NODE_INTERNAL_URL })
+      console.log("before connect")
+      const node = await Node({ url: NODE_URL, internalUrl:  NODE_INTERNAL_URL, axiosConfig: { config: {
+        headers: {
+          'Content-Type' : 'application/x-www-form-urlencoded'
+        }
+      }} })
+      console.log(node)
       this.client = await RpcAepp({
         name: 'AEPP',
         nodes: [
