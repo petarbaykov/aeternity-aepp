@@ -9,7 +9,10 @@
         </div>
         <div v-if="addressResponse">
           <div class="flex  items-center justify-between" >
-            <div class="mr-3 text-grey-dark font-bold">{{ getBalance }} AE</div>
+            <div class="mr-3   text-right">
+                <ae-address :value="addressResponse.result" length="short" class="font-bold"/>
+                <span class="text-grey-dark">{{ getBalance }} AE</span>
+              </div>
             <ae-identicon v-if="addressResponse" :address="addressResponse.result" size="base" />
           </div>
         </div>
@@ -17,125 +20,105 @@
     </nav>
     <div class="px-2">
       <div class="flex flex-wrap p-4 -mx-2 ">
-        <div class="w-full sm:w-5/5 md:w-2/5 lg:w-2/5 xl:w-2/5 mb-4 px-2 border rounded shadow-lg p-2 text-center">
-          <h2 class="mt-4 mb-4 big-title">Wallet info</h2>
+        <div class="w-full sm:w-5/5 md:w-2/5 lg:w-2/5 xl:w-2/5 mb-4 px-2">
+          <div class=" border rounded shadow-lg p-2 text-center">
+            <h2 class="mt-4 mb-4 big-title">Wallet info</h2>
 
-          <ae-list>
-            <ae-list-item fill="neutral" v-if="balance">
-              <div class="flex  items-center justify-between w-full" >
-                <div class="mr-3 text-grey-dark font-bold">Balance</div>
-                <div>{{ getBalance }} AE</div>
-              </div>
-            </ae-list-item>
-            <ae-list-item fill="neutral" v-if="heightResponse">
-              <div class="flex  items-center justify-between w-full" >
-                <div class="mr-3 text-grey-dark font-bold">Height</div>
-                <div>{{heightResponse | responseToString}} </div>
-              </div>
-            </ae-list-item>
-            <template v-if="nodeInfoResponse">
-              <div v-if="nodeInfoResponse.error" class="bg-green w-full flex flex-row font-mono border border-b">
-                <div class="p-2 w-1/4">
-                  NodeInfo error
-                </div>
-                <div class="p-2 w-3/4 bg-grey-lightest break-words">
-                  {{nodeInfoResponse.error}}
-                </div>
-              </div>
-              <ae-list-item fill="neutral" 
-                v-for="(value, name) in nodeInfoResponse.result"
-                v-if="['url', 'name', 'nodeNetworkId', 'version'].includes(name)"
-              >
+            <ae-list>
+              <ae-list-item fill="neutral" v-if="balance">
                 <div class="flex  items-center justify-between w-full" >
-                  <div class="capitalize mr-3 text-grey-dark font-bold">{{name.replace('nodeNetworkId', 'NetworkId')}}</div>
-                  <div> {{value}} </div>
+                  <div class="mr-3 text-grey-dark font-bold">Balance</div>
+                  <div>{{ getBalance }} AE</div>
                 </div>
               </ae-list-item>
-            </template>
-            <ae-list-item fill="neutral" v-if="compilerVersionResponse">
-              <div class="flex  items-center justify-between w-full" >
-                <div class="mr-3 text-grey-dark font-bold">Compiler version</div>
-                <div>{{compilerVersionResponse | responseToString}} </div>
-              </div>
-            </ae-list-item>
-          </ae-list>
-          <ae-button v-if="addressResponse" face="round" fill="primary" class="mt-4" @click="disconnect">Disconnect</ae-button>
+              <ae-list-item fill="neutral" v-if="heightResponse">
+                <div class="flex  items-center justify-between w-full" >
+                  <div class="mr-3 text-grey-dark font-bold">Height</div>
+                  <div>{{heightResponse | responseToString}} </div>
+                </div>
+              </ae-list-item>
+              <template v-if="nodeInfoResponse">
+                <div v-if="nodeInfoResponse.error" class="bg-green w-full flex flex-row font-mono border border-b">
+                  <div class="p-2 w-1/4">
+                    NodeInfo error
+                  </div>
+                  <div class="p-2 w-3/4 bg-grey-lightest break-words">
+                    {{nodeInfoResponse.error}}
+                  </div>
+                </div>
+                <ae-list-item fill="neutral" 
+                  v-for="(value, name) in nodeInfoResponse.result"
+                  v-if="['url', 'name', 'nodeNetworkId', 'version'].includes(name)"
+                >
+                  <div class="flex  items-center justify-between w-full" >
+                    <div class="capitalize mr-3 text-grey-dark font-bold">{{name.replace('nodeNetworkId', 'NetworkId')}}</div>
+                    <div> {{value}} </div>
+                  </div>
+                </ae-list-item>
+              </template>
+              <ae-list-item fill="neutral" v-if="compilerVersionResponse">
+                <div class="flex  items-center justify-between w-full" >
+                  <div class="mr-3 text-grey-dark font-bold">Compiler version</div>
+                  <div>{{compilerVersionResponse | responseToString}} </div>
+                </div>
+              </ae-list-item>
+            </ae-list>
+            <ae-button v-if="addressResponse" face="round" fill="primary" class="mt-4" @click="disconnect">Disconnect</ae-button>
+          </div>
         </div>
         <div class="w-full sm:w-5/5 md:w-3/5 lg:w-3/5 xl:w-3/5 mb-4 px-2 ">
-          Col 2
+          <div class=" border rounded shadow-lg p-2 text-center">
+            <h2 class="mt-4 mb-4 p-2 big-title">Spend tokens</h2>
+            <div  v-if="spendResponse" class="bg-teal-lightest border-t-4 border-teal rounded-b text-teal-datker px-4 py-3 shadow-md mt-4 mb-4" role="alert">
+              <div class="flex">
+                <div class="py-1"><svg class="fill-current h-6 w-6 text-teal mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/></svg></div>
+                <div>
+                  <p class="font-bold">Send result</p>
+                  <p class=" break-words whitespace-pre-wrap">{{ spendResponse | responseToFormattedJSON }}</p>
+                </div>
+              </div>
+            </div>
+            <div class="bg-grey-lightest w-full flex flex-row font-mono">
+              <div class="p-2 w-1/4">
+                Recipient address
+              </div>
+              <div class="p-2 w-3/4 bg-white break-words">
+                <input
+                  class="bg-black text-white border-b border-black p-2 w-full"
+                  v-model="spendTo"
+                  placeholder="ak_..."
+                />
+              </div>
+            </div>
+            <div class="bg-grey-lightest w-full flex flex-row font-mono">
+              <div class="p-2 w-1/4">
+                Tokens amount
+              </div>
+              <div class="p-2 w-3/4 bg-white break-words">
+                <input
+                  class="bg-black text-white border-b border-black p-2 w-full"
+                  v-model="spendAmount"
+                />
+              </div>
+            </div>
+            <div class="bg-grey-lightest w-full flex flex-row font-mono">
+              <div class="p-2 w-1/4">
+                Payload
+              </div>
+              <div class="p-2 w-3/4 bg-white break-words">
+                <input
+                  class="bg-black text-white border-b border-black p-2 w-full"
+                  v-model="spendPayload"
+                />
+              </div>
+            </div>
+
+            <ae-button v-if="client" face="round" fill="primary" class="mt-4" @click="spend">Spend</ae-button>
+          </div>
         </div>
       </div>
     </div>
     <div class="w-full p-4 flex flex-col">
-      
-
-      
-
-      <div class="border mt-4 rounded overflow-hidden shadow-lg p-4 text-center">
-        <h2 class="mt-4 mb-4 p-2 big-title">Spend tokens</h2>
-
-        <!-- <div v-if="spendResponse" class="border mt-4 mb-8 rounded">
-          <div class="bg-green w-full flex flex-row font-mono border border-b">
-            <div class="p-2 w-1/4">
-              Send result
-            </div>
-            <div
-              class="p-2 w-3/4 bg-grey-lightest break-words whitespace-pre-wrap"
-            >{{ spendResponse | responseToFormattedJSON }}</div>
-          </div>
-        </div> -->
-
-        <div  v-if="spendResponse" class="bg-teal-lightest border-t-4 border-teal rounded-b text-teal-datker px-4 py-3 shadow-md mt-4 mb-4" role="alert">
-          <div class="flex">
-            <div class="py-1"><svg class="fill-current h-6 w-6 text-teal mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/></svg></div>
-            <div>
-              <p class="font-bold">Send result</p>
-              <p class=" break-words whitespace-pre-wrap">{{ spendResponse | responseToFormattedJSON }}</p>
-            </div>
-          </div>
-        </div>
-        <div class="bg-grey-lightest w-full flex flex-row font-mono">
-          <div class="p-2 w-1/4">
-            Recipient address
-          </div>
-          <div class="p-2 w-3/4 bg-white break-words">
-            <input
-              class="bg-black text-white border-b border-black p-2 w-full"
-              v-model="spendTo"
-              placeholder="ak_..."
-            />
-          </div>
-        </div>
-        <div class="bg-grey-lightest w-full flex flex-row font-mono">
-          <div class="p-2 w-1/4">
-            Tokens amount
-          </div>
-          <div class="p-2 w-3/4 bg-white break-words">
-            <input
-              class="bg-black text-white border-b border-black p-2 w-full"
-              v-model="spendAmount"
-            />
-          </div>
-        </div>
-        <div class="bg-grey-lightest w-full flex flex-row font-mono">
-          <div class="p-2 w-1/4">
-            Payload
-          </div>
-          <div class="p-2 w-3/4 bg-white break-words">
-            <input
-              class="bg-black text-white border-b border-black p-2 w-full"
-              v-model="spendPayload"
-            />
-          </div>
-        </div>
-
-        <ae-button v-if="client" face="round" fill="primary" class="mt-4" @click="spend">Spend</ae-button>
-      </div>
-
-      
-
-      
-
       <div class="border mt-4 rounded overflow-hidden shadow-lg p-4 text-center">
         <h2 class="mt-4 mb-4 p-2 big-title">Compile Contract</h2>
         <div class="bg-grey-lightest w-full flex flex-row font-mono">
@@ -392,5 +375,10 @@
     width: 2.625rem !important;
     height: 2.625rem !important;
 }
-
+.ae-address {
+  font-weight: bold;
+}
+.ae-address li {
+  list-style: none;
+}
 </style>
