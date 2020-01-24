@@ -198,19 +198,20 @@
   //  is a webpack alias present in webpack.config.js
   import { RpcAepp } from '@aeternity/aepp-sdk/es'
   import Detector from '@aeternity/aepp-sdk/es/utils/aepp-wallet-communication/wallet-detector'
-  import BrowserWindowMessageConnection from '@aeternity/aepp-sdk/es/utils/aepp-wallet-communication/wallet-connection/browser-window-message'
-  import { isValidKeypair } from '@aeternity/aepp-sdk/es/utils/crypto'
+  import BrowserWindowMessageConnection from '@aeternity/aepp-sdk/es/utils/aepp-wallet-communication/connection/browser-window-message'
+import Node from '@aeternity/aepp-sdk/es/node'
 
   // Send wallet connection info to Aepp throug content script
-  const NODE_URL = 'https://sdk-testnet.aepps.com'
-  const NODE_INTERNAL_URL = 'https://sdk-testnet.aepps.com'
-  const COMPILER_URL = 'https://compiler.aepps.com'
+  const NODE_URL = 'https://mainnet.aeternity.io'
+  const NODE_INTERNAL_URL = 'https://mainnet.aeternity.io'
+  const COMPILER_URL = 'https://latest.compiler.aepps.com'
 
   const errorAsField = async fn => {
     try {
       return { result: await fn }
     } catch (error) {
       console.log(error)
+      console.log("ima error")
       return { error }
     }
   }
@@ -299,7 +300,6 @@
         return iframe.contentWindow
       },
       async connectToWallet (wallet) {
-        console.log(wallet)
         await this.client.connectToWallet(await wallet.getConnection())
         this.accounts = await this.client.subscribeAddress('subscribe', 'connected')
         this.pub = await this.client.address()
@@ -317,7 +317,7 @@
           if (confirm(`Do you want to connect to wallet ${newWallet.name}`)) {
             this.detector.stopScan()
 
-            this.connectToWallet(newWallet)
+            await this.connectToWallet(newWallet)
           }
         }
 
@@ -332,10 +332,12 @@
       // Open iframe with Wallet if run in top window
       window !== window.parent || await this.getReverseWindow()
       //
+      const node = await Node({ url: NODE_URL, internalUrl:  NODE_INTERNAL_URL })
       this.client = await RpcAepp({
         name: 'AEPP',
-        url: NODE_URL,
-        internalUrl: NODE_INTERNAL_URL,
+        nodes: [
+            { name: 'Mainnet', instance: node },
+        ],
         compilerUrl: COMPILER_URL,
         onNetworkChange (params) {
           if (this.getNetworkId() !== params.networkId) alert(`Connected network ${this.getNetworkId()} is not supported with wallet network ${params.networkId}`)
@@ -346,8 +348,6 @@
           this.addressResponse = await errorAsField(this.client.address())
         },
         onDisconnect (a) {
-          // debugger
-          console.log(a)
         }
       })
       this.height = await this.client.height()
