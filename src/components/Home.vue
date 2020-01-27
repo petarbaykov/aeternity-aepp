@@ -114,7 +114,7 @@
       </div>
     </div>
     <div class="w-full p-4 flex flex-col">
-      <div class="border mt-4 rounded overflow-hidden shadow-lg p-4 text-center">
+      <div class="border mt-4 rounded overflow-hidden shadow-lg p-4 text-center" v-if="contractMode == 'compile'">
         <h2 class="mt-4 mb-4 p-2 big-title">Compile Contract</h2>
         <div class="bg-grey-lightest w-full flex flex-row font-mono">
           <div class="p-2 w-1/4">
@@ -128,22 +128,27 @@
         <ae-button v-if="client" face="round" fill="primary" class="mt-4" @click="compile">Compile</ae-button>
       </div>
 
-      <div v-if="compileBytecodeResponse" class="border mt-4 mb-8 rounded overflow-hidden shadow-lg p-4 text-center">
-        <div class="bg-green w-full flex flex-row font-mono border border-b">
+      <div v-if="compileBytecodeResponse && contractMode == 'compiled'" class="border mt-4 mb-8 rounded overflow-hidden shadow-lg p-4 text-center">
+        <h2 class="mt-4 mb-4 p-2 big-title">Deploy Contract</h2>
+        <div class="bg-grey-lightest w-full flex flex-row font-mono">
           <div class="p-2 w-1/4">
             Compiled Code
           </div>
-          <div class="p-2 w-3/4 bg-grey-lightest break-words">
-            {{ compileBytecodeResponse | responseToString }}
+          <div class="p-2 w-3/4 bg-white">
+            <div class="bg-black text-white border-b border-black p-2 w-full h-64 break-words" >
+              {{ compileBytecodeResponse | responseToString }}
+            </div>
           </div>
         </div>
-
+        <ae-button v-if="compileBytecodeResponse && compileBytecodeResponse.result" face="round" fill="secondary" class="mt-4" @click="contractMode = 'compile'">Compile</ae-button>
         <ae-button v-if="compileBytecodeResponse && compileBytecodeResponse.result" face="round" fill="primary" class="mt-4" @click="deploy">Deploy</ae-button>
+
+        <ae-button v-if="deployResponse && deployResponse.result" face="round" fill="primary" class="mt-4" @click="call">Call</ae-button>
       </div>
 
       
 
-      <div v-if="deployResponse" class="border mt-4 mb-8 rounded">
+      <div v-if="deployResponse && contractMode == 'deployed'" class="border mt-4 mb-8 rounded">
         <div class="bg-green w-full flex flex-row font-mono border border-b">
           <div class="p-2 w-1/4">
             Deployed Contract
@@ -153,14 +158,7 @@
           >{{ deployResponse | responseToFormattedJSON }}</div>
         </div>
       </div>
-
-      <button
-        v-if="deployResponse && deployResponse.result"
-        class="w-32 rounded rounded-full bg-purple text-white py-2 px-4 pin-r mr-8 mt-4 text-xs"
-        @click="call"
-      >
-        Call
-      </button>
+      
 
       <div v-if="callResponse" class="border mt-4 mb-8 rounded">
         <div class="bg-green w-full flex flex-row font-mono border border-b">
@@ -184,16 +182,18 @@
   import Node from '@aeternity/aepp-sdk/es/node'
 
   // Send wallet connection info to Aepp throug content script
-  const NODE_URL = 'https://testnet.aeternal.io'
-  const NODE_INTERNAL_URL = 'https://testnet.aeternal.io'
-  const COMPILER_URL = 'https://latest.compiler.aepps.com'
+  const networks = {
+    'ae_uat': {
+      NODE_URL: 'https://sdk-testnet.aepps.com',
+      NODE_INTERNAL_URL: 'https://sdk-testnet.aepps.com',
+      COMPILER_URL: 'https://latest.compiler.aepps.com'
+    }
+  }
 
   const errorAsField = async fn => {
     try {
       return { result: await fn }
     } catch (error) {
-      console.log(error)
-      console.log("ima error")
       return { error }
     }
   }
@@ -214,8 +214,13 @@
         spendResult: null,
         spendError: null,
         balance: null,
-        contractCode: `contract Identity =
-      entrypoint main(x : int) = x`,
+        contractCode: `@compiler >= 4
+
+contract Example =
+  record state = { b: bytes(32) }
+  entrypoint init() : state = { b = #aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa }
+  entrypoint get_bytes() : bytes(32) = state.b
+  stateful entrypoint set_bytes(x: bytes(32)) = put(state{ b = x })`,
         byteCode: null,
         compileBytecodeResponse: null,
         contractInitState: [],
@@ -223,7 +228,8 @@
         callResponse: null,
         walletName: null,
         onAccount: null,
-        accounts: []
+        accounts: [],
+        contractMode:'compile'
       }
     },
     filters: {
@@ -256,20 +262,25 @@
         this.compileBytecodeResponse = await errorAsField(
           (await this.client.contractCompile(this.contractCode)).bytecode
         );
+        if(this.compileBytecodeResponse) {
+          this.contractMode = 'compiled'
+        }
       },
       async deploy () {
         this.deployResponse = await errorAsField(this.client.contractDeploy(
           this.compileBytecodeResponse.result, this.contractCode, this.contractInitState
         ));
       },
-      async call (code, method = 'main', returnType = 'int', args = ['5']) {
+      async call (code, method = 'get_bytes', returnType = 'bytes(32)', args = []) {
+        let arr = "#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        // args = [arr]
         this.callResponse = await errorAsField((async () => {
           const result = await this.client.contractCall(
             this.contractCode, this.deployResponse.result.address, method,  args
           )
           return Object.assign(
             result,
-            { decodedRes: await result.decode(returnType) }
+            { decodedRes: await result.decode() }
           )
         })())
       },
@@ -307,8 +318,9 @@
           // if (confirm(`Do you want to connect to wallet ${newWallet.name}`)) {
             
           // }
+          console.log(await newWallet)
           this.detector.stopScan()
-
+          
           await this.connectToWallet(newWallet)
         }
 
@@ -320,23 +332,16 @@
       }
     },
     async created () {
-      // Open iframe with Wallet if run in top window
       window !== window.parent || await this.getReverseWindow()
-      //
-      console.log("before connect")
-      const node = await Node({ url: NODE_URL, internalUrl:  NODE_INTERNAL_URL, axiosConfig: { config: {
-        headers: {
-          'Content-Type' : 'application/x-www-form-urlencoded'
-        }
-      }} })
-      console.log(node)
+      const node = await Node({ url: networks.ae_uat.NODE_URL, internalUrl:  networks.ae_uat.NODE_INTERNAL_URL })
       this.client = await RpcAepp({
         name: 'AEPP',
         nodes: [
-            { name: 'Mainnet', instance: node },
+            { name: 'ae_uat', instance: node },
         ],
-        compilerUrl: COMPILER_URL,
+        compilerUrl: networks.ae_uat.COMPILER_URL,
         onNetworkChange (params) {
+          console.log(params)
           if (this.getNetworkId() !== params.networkId) alert(`Connected network ${this.getNetworkId()} is not supported with wallet network ${params.networkId}`)
         },
         onAddressChange:  async (addresses) => {
