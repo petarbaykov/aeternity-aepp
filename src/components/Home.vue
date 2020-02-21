@@ -254,8 +254,8 @@ contract Example =
       async signMessage() {
         console.log(this.client)
         const messageSig  = await this.client.signMessage('test');
-        const isValid = await this.client.verifyMessage('test', messageSig)
         console.log(messageSig)
+        const isValid = await this.client.verifyMessage('test', messageSig)
         console.log(isValid)
       },
       async spend () {
