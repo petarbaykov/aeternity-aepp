@@ -64,6 +64,7 @@
               </ae-list-item>
             </ae-list>
             <ae-button v-if="addressResponse" face="round" fill="primary" class="mt-4" @click="disconnect">Disconnect</ae-button>
+            <ae-button face="round" fill="primary" class="mt-4" @click="signMessage">Sign Message</ae-button>
           </div>
         </div>
         <div class="w-full sm:w-5/5 md:w-3/5 lg:w-3/5 xl:w-3/5 mb-4 px-2 ">
@@ -146,7 +147,10 @@
         <ae-button v-if="deployResponse && deployResponse.result" face="round" fill="primary" class="mt-4" @click="call">Call</ae-button>
       </div>
 
-      
+      <div  class="border mt-4 mb-8 rounded overflow-hidden shadow-lg p-4 text-center">
+        <h2 class="mt-4 mb-4 p-2 big-title">Send Tip</h2>
+
+      </div>
 
       <div v-if="deployResponse && contractMode == 'deployed'" class="border mt-4 mb-8 rounded">
         <div class="bg-green w-full flex flex-row font-mono border border-b">
@@ -247,6 +251,13 @@ contract Example =
       convertToAE  (balance)  {
           return +(balance / 10 ** 18).toFixed(7);
       },
+      async signMessage() {
+        console.log(this.client)
+        const messageSig  = await this.client.signMessage('test');
+        const isValid = await aepp.verifyMessage('test', messageSig)
+        console.log(messageSig)
+        console.log(isValid)
+      },
       async spend () {
         const onAccount = Object.keys(this.accounts.address.connected)[0]
         this.spendResponse = await errorAsField(this.client.spend(
@@ -313,22 +324,27 @@ contract Example =
         this.compilerVersionResponse = await errorAsField(this.client.getCompilerVersion())
       },
       async scanForWallets () {
-        const handleWallets = async function ({ wallets, newWallet }) {
-          newWallet = newWallet || Object.values(wallets)[0]
-          // if (confirm(`Do you want to connect to wallet ${newWallet.name}`)) {
+        try {
+          const handleWallets = async function ({ wallets, newWallet }) {
+            newWallet = newWallet || Object.values(wallets)[0]
+            // if (confirm(`Do you want to connect to wallet ${newWallet.name}`)) {
+              
+            // }
+            this.detector.stopScan()
             
-          // }
-          console.log(await newWallet)
-          this.detector.stopScan()
-          
-          await this.connectToWallet(newWallet)
-        }
+            await this.connectToWallet(newWallet)
+            // let addr = await this.client.askAddresses()
+          }
 
-        const scannerConnection = await BrowserWindowMessageConnection({
-          connectionInfo: { id: 'spy' }
-        })
-        this.detector = await Detector({ connection: scannerConnection })
-        this.detector.scan(handleWallets.bind(this))
+          const scannerConnection = await BrowserWindowMessageConnection({
+            connectionInfo: { id: 'spy' }
+          })
+          this.detector = await Detector({ connection: scannerConnection })
+          this.detector.scan(handleWallets.bind(this))
+        } catch(e) {
+          console.log(e)
+        }
+        
       }
     },
     async created () {
@@ -345,11 +361,14 @@ contract Example =
           if (this.getNetworkId() !== params.networkId) alert(`Connected network ${this.getNetworkId()} is not supported with wallet network ${params.networkId}`)
         },
         onAddressChange:  async (addresses) => {
+          console.log(addresses)
           this.pub = await this.client.address()
           this.balance = await this.client.balance(this.pub).catch(e => '0')
           this.addressResponse = await errorAsField(this.client.address())
         },
         onDisconnect (a) {
+          console.log("disconnect")
+          console.log(a)
         }
       })
       this.height = await this.client.height()

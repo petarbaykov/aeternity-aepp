@@ -5,8 +5,8 @@
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "NODE_ENV='prod' webpack -p",
-    "start:dev": "SET NODE_ENV='dev' && webpack-dev-server --config ./webpack.config.js"
+    "build": "cross-env NODE_ENV='prod' webpack -p",
+    "start:dev": "cross-env NODE_ENV='dev' webpack-dev-server --config ./webpack.config.js"
   },
   "main": "src/index.js",
   "repository": "https://github.com/aeternity/aepp-sdk-js",
@@ -14,7 +14,8 @@
   "license": "ISC",
   "dependencies": {
     "@aeternity/aepp-components": "git+https://github.com/aeternity/aepp-components.git#develop",
-    "@aeternity/aepp-sdk": "7.0.0-next.2",
+    "@aeternity/aepp-sdk": "git+https://github.com/aeternity/aepp-sdk-js.git#develop",
+    "cross-env": "^7.0.0",
     "express": "^4.17.1",
     "purgecss-webpack-plugin": "^1.2.0",
     "vue": "^2.5.16",
