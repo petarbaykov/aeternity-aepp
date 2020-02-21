@@ -252,9 +252,8 @@ contract Example =
           return +(balance / 10 ** 18).toFixed(7);
       },
       async signMessage() {
-        console.log(this.client)
         const messageSig  = await this.client.signMessage('test');
-        console.log(messageSig)
+        console.log("signed message => ", messageSig)
         const isValid = await this.client.verifyMessage('test', messageSig)
         console.log(isValid)
       },
