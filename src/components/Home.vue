@@ -187,10 +187,15 @@
 
   // Send wallet connection info to Aepp throug content script
   const networks = {
-    'ae_uat': {
+    'ae_mainnet': {
       NODE_URL: 'https://mainnet.aeternal.io',
       NODE_INTERNAL_URL: 'https://mainnet.aeternal.io',
       COMPILER_URL: 'https://compiler.aepps.com'
+    },
+    'ae_uat': {
+      NODE_URL: 'https://testnet.aeternal.io',
+      NODE_INTERNAL_URL: 'https://testnet.aeternal.io',
+      COMPILER_URL: 'https://latest.compiler.aepps.com'
     }
   }
 
@@ -348,13 +353,13 @@ contract Example =
     },
     async created () {
       window !== window.parent || await this.getReverseWindow()
-      const node = await Node({ url: networks.ae_uat.NODE_URL, internalUrl:  networks.ae_uat.NODE_INTERNAL_URL })
+      const node = await Node({ url: networks.ae_mainnet.NODE_URL, internalUrl:  networks.ae_mainnet.NODE_INTERNAL_URL })
       this.client = await RpcAepp({
         name: 'AEPP',
         nodes: [
-            { name: 'ae_uat', instance: node },
+            { name: 'ae_mainnet', instance: node },
         ],
-        compilerUrl: networks.ae_uat.COMPILER_URL,
+        compilerUrl: networks.ae_mainnet.COMPILER_URL,
         onNetworkChange (params) {
           console.log(params)
           if (this.getNetworkId() !== params.networkId) alert(`Connected network ${this.getNetworkId()} is not supported with wallet network ${params.networkId}`)
