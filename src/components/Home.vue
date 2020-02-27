@@ -188,9 +188,9 @@
   // Send wallet connection info to Aepp throug content script
   const networks = {
     'ae_uat': {
-      NODE_URL: 'https://sdk-testnet.aepps.com',
-      NODE_INTERNAL_URL: 'https://sdk-testnet.aepps.com',
-      COMPILER_URL: 'https://latest.compiler.aepps.com'
+      NODE_URL: 'https://mainnet.aeternal.io',
+      NODE_INTERNAL_URL: 'https://mainnet.aeternal.io',
+      COMPILER_URL: 'https://compiler.aepps.com'
     }
   }
 
