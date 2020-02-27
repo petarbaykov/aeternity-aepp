@@ -260,7 +260,7 @@ contract Example =
         const messageSig  = await this.client.signMessage('test');
         console.log("signed message => ", messageSig)
         const isValid = await this.client.verifyMessage('test', messageSig)
-        console.log(isValid)
+        console.log("verified", isValid)
       },
       async spend () {
         const onAccount = Object.keys(this.accounts.address.connected)[0]
